@@ -287,10 +287,19 @@ window.AREA_DATA = [{"name":"北京市","cities":[{"name":"市辖区","areas":["
   var CONFIG = {
     girlName: "宝宝",               // 你对女朋友的称呼
     boyName: "昊昊",                // 你的名字
+    expireAt: "2026-08-21T23:59:59+08:00", // ← 自动过期时间(默认3天后=8月21日),到点页面自动变成"已过期";想改时间就改这里
     note: "记得穿得美美的,我会提前到等你 🥰" // 想对她说的话
   };
 </script>
 <!-- ================= 改到这里为止 ================= -->
+
+<!-- 过期后的惊喜页(3天后自动显示) -->
+<div class="card hidden" id="expiredCard">
+  <span class="envelope">💌</span>
+  <h1>这份邀请,已过期</h1>
+  <p class="hello">因为从你答应的那天起,<br>我们每天都在见面 🥰</p>
+  <p class="foot">—— 永远等你点头的 <span id="expiredName"></span></p>
+</div>
 
 <div class="card" id="card">
   <p class="typing" id="typingLine"></p>
@@ -367,6 +376,14 @@ window.AREA_DATA = [{"name":"北京市","cities":[{"name":"市辖区","areas":["
 
 <script>
   (function () {
+    /* 过期检查:超过 expireAt 就只显示过期页,不执行其余逻辑 */
+    if (CONFIG.expireAt && new Date() > new Date(CONFIG.expireAt)) {
+      document.getElementById('card').style.display = 'none';
+      document.getElementById('expiredCard').classList.remove('hidden');
+      document.getElementById('expiredName').textContent = CONFIG.boyName;
+      return;
+    }
+
     /* 开场打字机 */
     var typeText = '// 正在生成一封无法拒绝的邀请函…';
     var typeEl = document.getElementById('typingLine');
